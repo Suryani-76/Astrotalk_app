@@ -1066,14 +1066,14 @@ Please begin the personalized reading now.`;
 /* ================================================
    SCREEN NAVIGATION
    ================================================ */
-const screens = {
-  welcome: document.getElementById('screen-welcome'),
-  form:    document.getElementById('screen-form'),
-  aspects: document.getElementById('screen-aspects'),
-  result:  document.getElementById('screen-result'),
-};
-
 function showScreen(name) {
+  const screens = {
+    welcome: document.getElementById('screen-welcome'),
+    form:    document.getElementById('screen-form'),
+    aspects: document.getElementById('screen-aspects'),
+    result:  document.getElementById('screen-result'),
+  };
+
   Object.entries(screens).forEach(([key, el]) => {
     if (!el) return;
     if (key === name) {
@@ -1371,9 +1371,174 @@ function initAspectsAndCheckout() {
 }
 
 /* ================================================
-   NAVIGATION & MODALS
+   STEP 1: FORM VALIDATION & NAVIGATION
    ================================================ */
-// Navigation Links
+function validateField(id, errorId, message) {
+  const input = document.getElementById(id);
+  const error = document.getElementById(errorId);
+  const group = input?.closest('.form-group');
+  if (!input || !error) return true;
+
+  if (!input.value.trim()) {
+    input.classList.add('error');
+    error.textContent = message;
+    group?.classList.add('has-error');
+    return false;
+  }
+
+  input.classList.remove('error');
+  error.textContent = '';
+  group?.classList.remove('has-error');
+  return true;
+}
+
+function clearError(inputEl, errorId) {
+  inputEl.classList.remove('error');
+  const error = document.getElementById(errorId);
+  if (error) error.textContent = '';
+  const group = inputEl.closest('.form-group');
+  if (group) group.classList.remove('has-error');
+}
+
+// Clear errors live on typing
+['input-name', 'input-dob', 'input-place'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', function () {
+    const errorId = 'error-' + id.replace('input-', '');
+    clearError(this, errorId);
+  });
+});
+
+// Unknown time of birth checkbox toggle
+document.getElementById('tob-unknown-check')?.addEventListener('change', function () {
+  const tobInput = document.getElementById('input-tob');
+  if (!tobInput) return;
+  if (this.checked) {
+    tobInput.value = '';
+    tobInput.disabled = true;
+    tobInput.style.opacity = '0.4';
+  } else {
+    tobInput.disabled = false;
+    tobInput.style.opacity = '1';
+  }
+});
+
+// Welcome Screen CTA -> Proceed to Step 1 (Birth Form)
+document.getElementById('btn-start')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  showScreen('form');
+});
+
+// 12 Zodiac cards on Welcome Screen: Click to activate & highlight in cosmos
+document.querySelectorAll('.zodiac-card').forEach(card => {
+  card.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.zodiac-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    const signName = card.dataset.sign;
+    if (typeof triggerConstellationHighlight === 'function') {
+      triggerConstellationHighlight(signName, 4.0);
+    }
+  });
+});
+
+// Step 1 Back Button -> Return to Welcome
+document.getElementById('btn-back')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  showScreen('welcome');
+});
+
+// Step 1 Form Submission Handler -> Validate & Go to Step 2 (Cosmic Aspects Checkout)
+function handleBirthFormSubmit(e) {
+  if (e) e.preventDefault();
+
+  const nameOk  = validateField('input-name',  'error-name',  'Please enter your full name.');
+  const dobOk   = validateField('input-dob',   'error-dob',   'Please enter your date of birth.');
+  const placeOk = validateField('input-place', 'error-place', 'Please enter your place of birth.');
+
+  if (!nameOk || !dobOk || !placeOk) return;
+
+  const name   = document.getElementById('input-name').value.trim();
+  const dob    = document.getElementById('input-dob').value;
+  const tob    = document.getElementById('tob-unknown-check')?.checked
+                   ? null
+                   : document.getElementById('input-tob')?.value || null;
+  const place  = document.getElementById('input-place').value.trim();
+  const gender = document.querySelector('input[name="gender"]:checked')?.value || null;
+
+  // Compute Sun Sign
+  const [year, month, day] = dob.split('-').map(Number);
+  const sign = getSunSign(month, day);
+
+  currentUserData = { name, dob, tob, place, gender, sign };
+
+  // Brief button loading indicator
+  const btn = document.getElementById('btn-continue-aspects') || document.getElementById('btn-generate');
+  if (btn) {
+    btn.classList.add('loading');
+    btn.disabled = true;
+  }
+
+  setTimeout(() => {
+    if (btn) {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+    updatePricing();
+    showScreen('aspects');
+  }, 400);
+}
+
+// Bind both the form submit event and direct button click
+document.getElementById('astro-form')?.addEventListener('submit', handleBirthFormSubmit);
+document.getElementById('btn-continue-aspects')?.addEventListener('click', (e) => {
+  // Form submit handles it
+});
+
+// Step 3 (Result) -> Start Over Button
+document.getElementById('btn-restart')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('astro-form')?.reset();
+  const tobUnknown = document.getElementById('tob-unknown-check');
+  if (tobUnknown) tobUnknown.checked = false;
+  const inputTob = document.getElementById('input-tob');
+  if (inputTob) {
+    inputTob.disabled = false;
+    inputTob.style.opacity = '1';
+  }
+  selectedAspects = new Set(['love', 'finance']);
+  document.querySelectorAll('.aspect-tile').forEach(tile => {
+    const id = tile.dataset.aspect;
+    if (selectedAspects.has(id)) {
+      tile.classList.add('selected');
+      tile.setAttribute('aria-checked', 'true');
+    } else {
+      tile.classList.remove('selected');
+      tile.setAttribute('aria-checked', 'false');
+    }
+  });
+  updatePricing();
+  showScreen('welcome');
+});
+
+// UPI ID Verify button feedback
+document.getElementById('btn-verify-upi')?.addEventListener('click', function(e) {
+  e.preventDefault();
+  const upiInput = document.getElementById('input-upi-id');
+  if (!upiInput || !upiInput.value.trim()) {
+    upiInput?.focus();
+    return;
+  }
+  this.textContent = 'Verifying...';
+  setTimeout(() => {
+    this.textContent = 'Verified ✓';
+    this.style.background = 'rgba(52, 211, 153, 0.25)';
+    this.style.color = '#34d399';
+  }, 400);
+});
+
+/* ================================================
+   NAVIGATION BAR & MODALS
+   ================================================ */
 document.getElementById('logo-home')?.addEventListener('click', (e) => {
   e.preventDefault();
   showScreen('welcome');
@@ -1397,7 +1562,8 @@ function closeModal(id) {
 }
 
 // Nav: Login Modal
-document.getElementById('btn-open-login')?.addEventListener('click', () => {
+document.getElementById('btn-open-login')?.addEventListener('click', (e) => {
+  e.preventDefault();
   openModal('modal-login');
 });
 document.getElementById('btn-close-login')?.addEventListener('click', () => {
@@ -1442,17 +1608,23 @@ window.addEventListener('keydown', (e) => {
 document.getElementById('form-login')?.addEventListener('submit', function(e) {
   e.preventDefault();
   const btn = this.querySelector('.btn-modal-submit');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '<span>Signing in...</span>';
-  btn.style.opacity = '0.75';
+  const originalText = btn?.innerHTML || 'Sign In';
+  if (btn) {
+    btn.innerHTML = '<span>Signing in...</span>';
+    btn.style.opacity = '0.75';
+  }
   setTimeout(() => {
-    btn.innerHTML = '<span>✓ Welcome Back!</span>';
-    btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+    if (btn) {
+      btn.innerHTML = '<span>✓ Welcome Back!</span>';
+      btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+    }
     setTimeout(() => {
       closeModal('modal-login');
-      btn.innerHTML = originalText;
-      btn.style.background = '';
-      btn.style.opacity = '';
+      if (btn) {
+        btn.innerHTML = originalText;
+        btn.style.background = '';
+        btn.style.opacity = '';
+      }
       const navBtn = document.getElementById('btn-open-login');
       if (navBtn) {
         navBtn.innerHTML = '<span class="nav-login-sparkle">✦</span><span>My Sanctuary</span>';
@@ -1462,13 +1634,15 @@ document.getElementById('form-login')?.addEventListener('submit', function(e) {
 });
 
 // Guest Pass Button
-document.getElementById('btn-login-guest')?.addEventListener('click', () => {
+document.getElementById('btn-login-guest')?.addEventListener('click', (e) => {
+  e.preventDefault();
   closeModal('modal-login');
   showScreen('form');
 });
 
 // Google Login Simulation
-document.getElementById('btn-login-google')?.addEventListener('click', function() {
+document.getElementById('btn-login-google')?.addEventListener('click', function(e) {
+  e.preventDefault();
   this.innerHTML = '<span>Connecting...</span>';
   setTimeout(() => {
     closeModal('modal-login');
@@ -1523,48 +1697,48 @@ function populateResult({ name, dob, tob, place, gender, sign, aspects, txnId, a
   if (promptEl) promptEl.textContent = prompt;
 }
 
-// Initialize checkout logic
-initAspectsAndCheckout();
-updatePricing();
-
-
 /* ================================================
    COPY TO CLIPBOARD
    ================================================ */
-document.getElementById('btn-copy').addEventListener('click', async function () {
-  const text = document.getElementById('prompt-text').textContent;
+document.getElementById('btn-copy')?.addEventListener('click', async function () {
+  const text = document.getElementById('prompt-text')?.textContent || '';
   try {
     await navigator.clipboard.writeText(text);
     this.classList.add('copied');
-    document.getElementById('copy-icon').textContent  = '✓';
-    document.getElementById('copy-label').textContent = 'Copied!';
+    const copyIcon = document.getElementById('copy-icon');
+    const copyLabel = document.getElementById('copy-label');
+    if (copyIcon) copyIcon.textContent = '✓';
+    if (copyLabel) copyLabel.textContent = 'Copied!';
     setTimeout(() => {
       this.classList.remove('copied');
-      document.getElementById('copy-icon').textContent  = '📋';
-      document.getElementById('copy-label').textContent = 'Copy Prompt';
+      if (copyIcon) copyIcon.textContent = '📋';
+      if (copyLabel) copyLabel.textContent = 'Copy Prompt';
     }, 2500);
   } catch {
     // Fallback
-    const range = document.createRange();
-    range.selectNode(document.getElementById('prompt-text'));
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-    document.execCommand('copy');
-    window.getSelection().removeAllRanges();
-    document.getElementById('copy-label').textContent = 'Copied!';
-    setTimeout(() => {
-      document.getElementById('copy-label').textContent = 'Copy Prompt';
-    }, 2500);
+    const promptBody = document.getElementById('prompt-text');
+    if (promptBody) {
+      const range = document.createRange();
+      range.selectNode(promptBody);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+      const copyLabel = document.getElementById('copy-label');
+      if (copyLabel) copyLabel.textContent = 'Copied!';
+      setTimeout(() => {
+        if (copyLabel) copyLabel.textContent = 'Copy Prompt';
+      }, 2500);
+    }
   }
 });
-
 
 /* ================================================
    DOWNLOAD AS TEXT FILE
    ================================================ */
-document.getElementById('btn-download').addEventListener('click', function () {
-  const text     = document.getElementById('prompt-text').textContent;
-  const name     = document.getElementById('user-name-display').textContent || 'person';
+document.getElementById('btn-download')?.addEventListener('click', function () {
+  const text     = document.getElementById('prompt-text')?.textContent || '';
+  const name     = document.getElementById('user-name-display')?.textContent || 'person';
   const filename = `AstroTalk_${name.replace(/\s+/g, '_')}_Reading.txt`;
   const blob     = new Blob([text], { type: 'text/plain' });
   const url      = URL.createObjectURL(blob);
@@ -1575,13 +1749,17 @@ document.getElementById('btn-download').addEventListener('click', function () {
   URL.revokeObjectURL(url);
 });
 
-
 /* ================================================
-   INITIAL SCREEN
+   APPLICATION BOOTSTRAP
    ================================================ */
-window.addEventListener('DOMContentLoaded', () => {
-  // Trigger welcome screen entrance
-  requestAnimationFrame(() => {
-    screens.welcome.classList.add('active');
-  });
-});
+function bootstrapApp() {
+  initAspectsAndCheckout();
+  updatePricing();
+  showScreen('welcome');
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', bootstrapApp);
+} else {
+  bootstrapApp();
+}
