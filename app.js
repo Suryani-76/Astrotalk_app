@@ -882,9 +882,100 @@ function formatTime(timeStr) {
 
 
 /* ================================================
-   PROMPT GENERATOR
+   COSMIC ASPECTS CATALOG & PRICING
+   Charged at ₹10 to ₹20 per aspect as requested
    ================================================ */
-function generateAstrologyPrompt({ name, dob, tob, place, gender, sign }) {
+const ASPECT_CATALOG = {
+  love: {
+    id: 'love',
+    name: 'Love & Soulmate Life',
+    price: 15,
+    tag: 'Venus · 5th & 7th House Activation',
+    points: [
+      '• Venus alignment & romantic aura: core attraction frequency and love language',
+      '• 7th House & 5th House deep analysis: what your soul seeks in an ideal partner',
+      '• Soulmate timing & romantic windows: high-compatibility meeting periods',
+      '• Karmic relationship lessons: releasing old attachment patterns for sacred union'
+    ]
+  },
+  finance: {
+    id: 'finance',
+    name: 'Wealth & Financial Fortune',
+    price: 19,
+    tag: 'Jupiter · 2nd & 11th House Activation',
+    points: [
+      '• Dhana Yoga & Lakshmi Yoga presence in natal chart: natural abundance channels',
+      '• 2nd House (accumulated wealth) & 11th House (income gains) planetary aspects',
+      '• High-gain investment & earning cycles for the next 12 to 24 months',
+      '• Abundance blockers: planetary remedies to dissolve financial friction'
+    ]
+  },
+  career: {
+    id: 'career',
+    name: 'Career, Job & Business',
+    price: 18,
+    tag: 'Sun & Saturn · 10th House Midheaven',
+    points: [
+      '• 10th House Midheaven (MC) alignment: highest karmic calling and vocation',
+      '• Corporate leadership vs. independent business/freelance suitability',
+      '• Promotion and authority cycles: ideal windows for salary hikes or career pivots',
+      '• Strategic planetary strengths to capitalize on for professional dominance'
+    ]
+  },
+  marriage: {
+    id: 'marriage',
+    name: 'Marriage & Compatibility',
+    price: 19,
+    tag: 'Navamsha (D9) & 7th Lord Dynamics',
+    points: [
+      '• Navamsha (D9) chart overview: true soul-level marital destiny and longevity',
+      '• Mangal Dosha & planetary affliction assessment with neutralizing remedies',
+      '• Future spouse physical, intellectual, and personality characteristics',
+      '• Most auspicious marriage timing & domestic peace recommendations'
+    ]
+  },
+  health: {
+    id: 'health',
+    name: 'Health & Cosmic Vitality',
+    price: 12,
+    tag: 'Mars & Moon · 6th House Harmony',
+    points: [
+      '• Astrological elemental balance (Fire, Earth, Air, Water) & Ayurvedic Dosha mapping',
+      '• 6th House vulnerability zones: preventative care and vital energy reserves',
+      '• Mental wellness & emotional restoration cycles in sync with lunar phases',
+      '• Cosmic lifestyle & rejuvenation rituals suited to your natal constitution'
+    ]
+  },
+  spirituality: {
+    id: 'spirituality',
+    name: 'Karma & Spiritual Destiny',
+    price: 14,
+    tag: 'Rahu-Ketu Axis · 9th & 12th House Transcendence',
+    points: [
+      '• Rahu (North Node) sacred compass: this lifetime\'s evolutionary growth vector',
+      '• Ketu (South Node) past-life gifts: inherited wisdom and karmic debts to clear',
+      '• 9th House (Dharma) & 12th House (Moksha): spiritual awakening milestones',
+      '• Daily meditation, sacred chants, and inner alignment practices'
+    ]
+  }
+};
+
+const BUNDLE_PRICE = 59; // All 6 aspects bundle price (normally ₹97)
+
+// Dynamic user selections & checkout state
+let selectedAspects = new Set(['love', 'finance']);
+let isBundleSelected = false;
+let currentPaymentMethod = 'upi';
+let selectedUpiApp = 'PhonePe';
+let selectedBank = 'HDFC Bank';
+let currentUserData = null;
+let currentTxnId = 'TXN-ASTRO-' + Math.floor(1000 + Math.random() * 9000);
+
+/* ================================================
+   PROMPT GENERATOR
+   Tailored dynamically to include only paid aspects
+   ================================================ */
+function generateAstrologyPrompt({ name, dob, tob, place, gender, sign, aspects, txnId, amountPaid, paymentMethod }) {
   const formattedDate = formatDate(dob);
   const formattedTime = tob ? formatTime(tob) : 'Unknown';
   const lifePathNum   = getLifePathNumber(dob);
@@ -893,88 +984,84 @@ function generateAstrologyPrompt({ name, dob, tob, place, gender, sign }) {
     ? `\n  • Time of Birth   : ${formattedTime} (local time at ${place})`
     : `\n  • Time of Birth   : Unknown (Rising Sign / Ascendant cannot be precisely calculated)`;
 
-  return `╔══════════════════════════════════════════════════════════════════╗
-║              🔮  PERSONALIZED ASTROLOGY READING REQUEST         ║
-╚══════════════════════════════════════════════════════════════════╝
+  const unlockedAspects = Array.from(aspects || ['love', 'finance']);
+  const unlockedAspectsList = unlockedAspects
+    .map(id => ASPECT_CATALOG[id]?.name || id)
+    .join('\n  • ');
 
-You are an expert Western astrologer with deep knowledge of natal charts,
-planetary transits, and astrological psychology. Please provide a
-comprehensive, deeply personalized astrology reading for the individual
-described below.
+  let aspectSectionsText = '';
+  let sectionIndex = 3;
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  BIRTH DETAILS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  unlockedAspects.forEach(id => {
+    const detail = ASPECT_CATALOG[id];
+    if (!detail) return;
+    aspectSectionsText += `\n${sectionIndex}. ✦ [PAID & UNLOCKED ASPECT] ${detail.name.toUpperCase()}
+   Astrological Vector: ${detail.tag}
+${detail.points.map(p => `   ${p}`).join('\n')}
+   • Provide at least 250+ words of granular, precise predictions specifically for this dimension.
+`;
+    sectionIndex++;
+  });
+
+  return `╔════════════════════════════════════════════════════════════════════════════════╗
+║             🔮  ASTROTALK COSMIC BLUEPRINT — TAILORED ASTROLOGY REPORT         ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+✦ VERIFIED TRANSACTION RECEIPT
+  • Transaction ID   : ${txnId || 'TXN-ASTRO-8942'}
+  • Payment Status   : SUCCESSFUL & UNLOCKED (₹${amountPaid || 34} via ${paymentMethod || 'UPI'})
+  • Unlocked Aspects : ${unlockedAspects.length} Custom Life Dimensions Decoded
+  • Security Seal    : 256-Bit Bank Grade SSL Verified
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BIRTH DETAILS & NATAL PROFILE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   • Full Name        : ${name}
   • Date of Birth    : ${formattedDate}${timeLine}
   • Place of Birth   : ${place}${genderLine}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  CALCULATED DETAILS (for reference)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  COSMIC PLACEMENTS & CALCULATION MATRIX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   • Sun Sign         : ${sign.symbol} ${sign.name} (${sign.element} sign, ruled by ${sign.planet})
   • Element          : ${sign.element}
   • Ruling Planet    : ${sign.planet}
   • Numerology Life Path : ${lifePathNum}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  READING SCOPE — Please address each section in detail:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PAID & UNLOCKED COSMIC DIMENSIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • ${unlockedAspectsList}
 
-1. 🌟 NATAL CHART OVERVIEW
-   • Sun Sign personality traits and core identity
-   • Moon Sign emotional nature (estimate if time is unknown)
-   • Rising / Ascendant sign (only if birth time is known)
-   • Overall chart temperament and dominant energies
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DETAILED READING SCOPE — Please address each section with deep accuracy:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-2. 🪐 PLANETARY POSITIONS & INFLUENCES
-   • Key planetary placements based on date and place of birth
-   • Dominant planets and how they shape personality
-   • Any notable conjunctions, oppositions, or trines to consider
+1. 🌟 CORE NATAL CHART & TEMPERAMENT
+   • Sun Sign personality traits, subconscious motivations, and primal vitality
+   • Moon Sign emotional sanctuary & intuitive processing
+   • Rising / Ascendant sign analysis (if birth time provided)
+   • Dominant planetary archetypes shaping ${name}'s path
 
-3. 💼 CAREER & LIFE PURPOSE
-   • Natural talents and ideal career paths aligned with their chart
-   • 10th House themes (Midheaven) and professional calling
-   • Best periods for career growth and advancement
+2. 🪐 ACTIVE PLANETARY TRANSITS & 12-MONTH HORIZON
+   • Current planetary cycles (Jupiter, Saturn, Rahu-Ketu) as of ${new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long' })}
+   • Critical transit windows, breakthrough seasons, and periods for patience
+${aspectSectionsText}
+${sectionIndex}. ✨ SACRED LUCKY ELEMENTS & PLANETARY REMEDIES
+   • Auspicious numbers, colors, days, and gemstones for ${sign.name}
+   • Daily planetary remedies aligned with ${sign.planet} to amplify harmony and abundance
+   • Empowering affirmation and mantra attuned to ${name}'s natal configuration
 
-4. 💕 RELATIONSHIPS & LOVE
-   • Relationship style, attachment patterns, and compatibility tendencies
-   • 7th House themes — what they seek in a partner
-   • Current or upcoming relationship transits to watch for
-
-5. 🌿 HEALTH & WELL-BEING
-   • Physical constitution based on Sun Sign element (${sign.element})
-   • Areas of the body to pay special attention to
-   • Lifestyle recommendations in harmony with their chart
-
-6. 🔮 CURRENT LIFE PHASE & PREDICTIONS
-   • Major transits currently influencing ${name}'s life (as of ${new Date().toLocaleDateString('en-IN', { year:'numeric', month:'long' })})
-   • Upcoming opportunities and challenges in the next 12 months
-   • Saturn and Jupiter transits and their impact
-
-7. 🌱 SPIRITUAL GROWTH & SOUL PURPOSE
-   • North Node (Rahu) direction — life lessons and karmic path
-   • South Node (Ketu) — past-life gifts and patterns to release
-   • Spiritual practices best suited for their chart
-
-8. ✨ LUCKY ELEMENTS
-   • Lucky numbers, colors, days, and gemstones for ${sign.name}
-   • Favorable directions and elements to incorporate daily
-   • Affirmations and mantras aligned with ${sign.planet} energy
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   TONE & FORMAT INSTRUCTIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• Address the person by their first name (${name.split(' ')[0]}) throughout.
-• Be warm, empowering, and insightful — not fatalistic.
-• Use clear section headings as listed above.
-• Provide specific, actionable guidance — avoid vague generalities.
-• Length: Aim for a thorough reading of at least 800–1000 words.
-• If birth time is unknown, clearly note when a placement is approximate.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Address ${name.split(' ')[0]} warmly and directly with empowering, actionable wisdom.
+• Focus deeply on the paid unlocked life aspects highlighted above.
+• Avoid vague horoscopic fluff; provide nuanced astrological logic citing planetary positions.
+• Minimum total reading length: 900–1200 words.
 
-Please begin the reading now.`;
+Please begin the personalized reading now.`;
 }
-
 
 /* ================================================
    SCREEN NAVIGATION
@@ -982,17 +1069,18 @@ Please begin the reading now.`;
 const screens = {
   welcome: document.getElementById('screen-welcome'),
   form:    document.getElementById('screen-form'),
+  aspects: document.getElementById('screen-aspects'),
   result:  document.getElementById('screen-result'),
 };
 
 function showScreen(name) {
   Object.entries(screens).forEach(([key, el]) => {
+    if (!el) return;
     if (key === name) {
       el.removeAttribute('hidden');
-      // Trigger reflow for transition
-      void el.offsetWidth;
+      void el.offsetWidth; // force reflow for transition
       el.classList.add('active');
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       el.classList.remove('active');
       setTimeout(() => {
@@ -1004,38 +1092,287 @@ function showScreen(name) {
   });
 }
 
-
 /* ================================================
-   FORM VALIDATION
+   PRICING & ASPECT SELECTION LOGIC
    ================================================ */
-function validateField(id, errorId, message) {
-  const input = document.getElementById(id);
-  const error = document.getElementById(errorId);
-  const group = input.closest('.form-group');
+function updatePricing() {
+  const count = selectedAspects.size;
+  const countEl = document.getElementById('selected-count');
+  if (countEl) countEl.textContent = count;
 
-  if (!input.value.trim()) {
-    input.classList.add('error');
-    error.textContent = message;
-    group.classList.add('has-error');
-    return false;
+  let subtotal = 0;
+  selectedAspects.forEach(aspectId => {
+    if (ASPECT_CATALOG[aspectId]) {
+      subtotal += ASPECT_CATALOG[aspectId].price;
+    }
+  });
+
+  const allSelected = count === Object.keys(ASPECT_CATALOG).length;
+  const discountRow = document.getElementById('discount-row');
+  const bundleBanner = document.getElementById('bundle-banner');
+  const btnBundle = document.getElementById('btn-bundle-toggle');
+
+  let finalTotal = subtotal;
+
+  if (allSelected) {
+    isBundleSelected = true;
+    const discount = subtotal - BUNDLE_PRICE;
+    finalTotal = BUNDLE_PRICE;
+    if (discountRow) discountRow.style.display = 'flex';
+    const discEl = document.getElementById('summary-discount');
+    if (discEl) discEl.textContent = `-₹${discount}`;
+    bundleBanner?.classList.add('bundle-active');
+    if (btnBundle) {
+      btnBundle.classList.add('active');
+      btnBundle.textContent = '✓ Bundle Active (₹59)';
+    }
+  } else {
+    isBundleSelected = false;
+    if (discountRow) discountRow.style.display = 'none';
+    bundleBanner?.classList.remove('bundle-active');
+    if (btnBundle) {
+      btnBundle.classList.remove('active');
+      btnBundle.textContent = 'Select All (₹59)';
+    }
   }
 
-  input.classList.remove('error');
-  error.textContent = '';
-  group.classList.remove('has-error');
-  return true;
+  const subtotalEl = document.getElementById('summary-subtotal');
+  if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
+
+  const totalEl = document.getElementById('summary-total');
+  if (totalEl) totalEl.textContent = `₹${finalTotal}`;
+
+  const payAmountEl = document.getElementById('btn-pay-amount');
+  if (payAmountEl) payAmountEl.textContent = `₹${finalTotal}`;
+
+  const procAmountEl = document.getElementById('processing-amount');
+  if (procAmountEl) procAmountEl.textContent = `₹${finalTotal}`;
 }
 
-function clearError(inputEl, errorId) {
-  inputEl.classList.remove('error');
-  document.getElementById(errorId).textContent = '';
-}
+function initAspectsAndCheckout() {
+  // 1. Aspect tiles click
+  const aspectTiles = document.querySelectorAll('.aspect-tile');
+  aspectTiles.forEach(tile => {
+    tile.addEventListener('click', () => {
+      const aspectId = tile.dataset.aspect;
+      if (selectedAspects.has(aspectId)) {
+        // Prevent unchecking all aspects
+        if (selectedAspects.size <= 1) {
+          tile.classList.add('shake');
+          setTimeout(() => tile.classList.remove('shake'), 400);
+          return;
+        }
+        selectedAspects.delete(aspectId);
+        tile.classList.remove('selected');
+        tile.setAttribute('aria-checked', 'false');
+      } else {
+        selectedAspects.add(aspectId);
+        tile.classList.add('selected');
+        tile.setAttribute('aria-checked', 'true');
+      }
+      updatePricing();
+    });
 
+    // Keyboard accessibility for tile selection
+    tile.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        tile.click();
+      }
+    });
+  });
+
+  // 2. Bundle toggle button
+  const btnBundle = document.getElementById('btn-bundle-toggle');
+  btnBundle?.addEventListener('click', () => {
+    const totalCount = Object.keys(ASPECT_CATALOG).length;
+    if (selectedAspects.size === totalCount) {
+      // Revert to 2 primary default aspects
+      selectedAspects = new Set(['love', 'finance']);
+      aspectTiles.forEach(tile => {
+        const id = tile.dataset.aspect;
+        if (selectedAspects.has(id)) {
+          tile.classList.add('selected');
+          tile.setAttribute('aria-checked', 'true');
+        } else {
+          tile.classList.remove('selected');
+          tile.setAttribute('aria-checked', 'false');
+        }
+      });
+    } else {
+      // Select all aspects
+      Object.keys(ASPECT_CATALOG).forEach(id => selectedAspects.add(id));
+      aspectTiles.forEach(tile => {
+        tile.classList.add('selected');
+        tile.setAttribute('aria-checked', 'true');
+      });
+    }
+    updatePricing();
+  });
+
+  // 3. Payment tabs
+  const payTabs = document.querySelectorAll('.pay-tab');
+  payTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      payTabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      const targetTab = tab.dataset.tab;
+      currentPaymentMethod = targetTab;
+
+      ['panel-upi', 'panel-card', 'panel-netbanking'].forEach(panelId => {
+        const p = document.getElementById(panelId);
+        if (p) p.style.display = 'none';
+      });
+
+      const activePanel = document.getElementById(`panel-${targetTab}`);
+      if (activePanel) activePanel.style.display = 'block';
+    });
+  });
+
+  // 4. UPI App buttons
+  const upiButtons = document.querySelectorAll('.upi-app-btn');
+  upiButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      upiButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedUpiApp = btn.dataset.app;
+    });
+  });
+
+  // 5. Dynamic QR toggle
+  const btnQrToggle = document.getElementById('btn-qr-toggle');
+  const qrContainer = document.getElementById('qr-box-container');
+  btnQrToggle?.addEventListener('click', () => {
+    if (qrContainer) {
+      const isClosed = qrContainer.style.display === 'none';
+      qrContainer.style.display = isClosed ? 'flex' : 'none';
+      const arrow = btnQrToggle.querySelector('.qr-arrow-indicator');
+      if (arrow) arrow.textContent = isClosed ? '▲' : '▼';
+    }
+  });
+
+  // 6. Net Banking Bank buttons
+  const bankButtons = document.querySelectorAll('.bank-btn');
+  bankButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      bankButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedBank = btn.dataset.bank;
+    });
+  });
+
+  // 7. Interactive Glass Card Preview sync
+  const inputCardName = document.getElementById('input-card-name');
+  const inputCardNum = document.getElementById('input-card-num');
+  const inputCardExp = document.getElementById('input-card-exp');
+  const previewName = document.getElementById('card-preview-name');
+  const previewNum = document.getElementById('card-preview-num');
+  const previewExp = document.getElementById('card-preview-exp');
+
+  inputCardName?.addEventListener('input', (e) => {
+    if (previewName) previewName.textContent = e.target.value.trim().toUpperCase() || 'ARJUN SHARMA';
+  });
+
+  inputCardNum?.addEventListener('input', (e) => {
+    // Format card number with spaces every 4 digits
+    let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+    let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+    e.target.value = formatted;
+    if (previewNum) previewNum.textContent = formatted || '4532 •••• •••• 4242';
+  });
+
+  inputCardExp?.addEventListener('input', (e) => {
+    let val = e.target.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 3) {
+      val = val.substring(0, 2) + '/' + val.substring(2, 4);
+    }
+    e.target.value = val;
+    if (previewExp) previewExp.textContent = val || '08/29';
+  });
+
+  // 8. Back to Birth Details Form
+  document.getElementById('btn-back-to-form')?.addEventListener('click', () => {
+    showScreen('form');
+  });
+
+  // 9. Big Pay & Unlock Button
+  const btnPayUnlock = document.getElementById('btn-pay-unlock');
+  btnPayUnlock?.addEventListener('click', () => {
+    if (selectedAspects.size === 0) {
+      alert('Please select at least one cosmic aspect to reveal.');
+      return;
+    }
+
+    // Determine current payment title
+    let payMethodName = 'PhonePe UPI';
+    if (currentPaymentMethod === 'upi') {
+      payMethodName = `${selectedUpiApp} UPI`;
+    } else if (currentPaymentMethod === 'card') {
+      const cardNum = document.getElementById('input-card-num')?.value.trim();
+      const last4 = cardNum ? cardNum.slice(-4) : '4242';
+      payMethodName = `AstroPay Card (•••• ${last4})`;
+    } else if (currentPaymentMethod === 'netbanking') {
+      payMethodName = `${selectedBank} Net Banking`;
+    }
+
+    // Calculate final total
+    let subtotal = 0;
+    selectedAspects.forEach(id => {
+      if (ASPECT_CATALOG[id]) subtotal += ASPECT_CATALOG[id].price;
+    });
+    const finalAmount = (selectedAspects.size === Object.keys(ASPECT_CATALOG).length) ? BUNDLE_PRICE : subtotal;
+
+    // Show processing modal
+    const modal = document.getElementById('payment-processing-modal');
+    const procTitle = document.getElementById('processing-title');
+    const procSub = document.getElementById('processing-subtitle');
+    const procFill = document.getElementById('processing-bar-fill');
+
+    if (modal) {
+      modal.removeAttribute('hidden');
+      if (procTitle) procTitle.textContent = 'Connecting to Cosmic Payment Gateway...';
+      if (procSub) procSub.innerHTML = `Verifying transaction of <strong>₹${finalAmount}</strong> via ${payMethodName}`;
+      if (procFill) {
+        procFill.style.width = '0%';
+        setTimeout(() => { procFill.style.width = '65%'; }, 350);
+        setTimeout(() => { procFill.style.width = '100%'; }, 950);
+      }
+    }
+
+    // Complete transaction after 1.4s
+    setTimeout(() => {
+      currentTxnId = 'TXN-ASTRO-' + Math.floor(1000 + Math.random() * 9000);
+      if (modal) modal.setAttribute('hidden', '');
+
+      // Populate result screen
+      if (currentUserData) {
+        populateResult({
+          ...currentUserData,
+          aspects: selectedAspects,
+          txnId: currentTxnId,
+          amountPaid: finalAmount,
+          paymentMethod: payMethodName
+        });
+      }
+
+      showScreen('result');
+
+      // Highlight celestial constellation
+      if (currentUserData?.sign && typeof triggerConstellationHighlight === 'function') {
+        triggerConstellationHighlight(currentUserData.sign.name, 6.0);
+      }
+    }, 1400);
+  });
+}
 
 /* ================================================
-   EVENT LISTENERS
+   NAVIGATION & MODALS
    ================================================ */
-
 // Navigation Links
 document.getElementById('logo-home')?.addEventListener('click', (e) => {
   e.preventDefault();
@@ -1052,15 +1389,11 @@ document.getElementById('nav-home')?.addEventListener('click', (e) => {
 // Modals Helper
 function openModal(id) {
   const modal = document.getElementById(id);
-  if (modal) {
-    modal.removeAttribute('hidden');
-  }
+  if (modal) modal.removeAttribute('hidden');
 }
 function closeModal(id) {
   const modal = document.getElementById(id);
-  if (modal) {
-    modal.setAttribute('hidden', '');
-  }
+  if (modal) modal.setAttribute('hidden', '');
 }
 
 // Nav: Login Modal
@@ -1120,7 +1453,6 @@ document.getElementById('form-login')?.addEventListener('submit', function(e) {
       btn.innerHTML = originalText;
       btn.style.background = '';
       btn.style.opacity = '';
-      // Update nav button to indicate signed in
       const navBtn = document.getElementById('btn-open-login');
       if (navBtn) {
         navBtn.innerHTML = '<span class="nav-login-sparkle">✦</span><span>My Sanctuary</span>';
@@ -1147,112 +1479,53 @@ document.getElementById('btn-login-google')?.addEventListener('click', function(
   }, 600);
 });
 
-// Welcome → Form
-document.getElementById('btn-start').addEventListener('click', () => {
-  showScreen('form');
-});
-
-// Form → Welcome
-document.getElementById('btn-back').addEventListener('click', () => {
-  showScreen('welcome');
-});
-
-// Result → Welcome
-document.getElementById('btn-restart').addEventListener('click', () => {
-  document.getElementById('astro-form').reset();
-  document.getElementById('tob-unknown-check').checked = false;
-  document.getElementById('input-tob').disabled = false;
-  document.getElementById('input-tob').style.opacity = '1';
-  showScreen('welcome');
-});
-
-// Unknown time toggle
-document.getElementById('tob-unknown-check').addEventListener('change', function () {
-  const tobInput = document.getElementById('input-tob');
-  if (this.checked) {
-    tobInput.value = '';
-    tobInput.disabled = true;
-    tobInput.style.opacity = '0.4';
-  } else {
-    tobInput.disabled = false;
-    tobInput.style.opacity = '1';
-  }
-});
-
-// Live clear errors on input
-['input-name', 'input-dob', 'input-place'].forEach(id => {
-  document.getElementById(id).addEventListener('input', function () {
-    const errorId = 'error-' + id.replace('input-', '');
-    clearError(this, errorId);
-  });
-});
-
-// Form submit
-document.getElementById('astro-form').addEventListener('submit', function (e) {
-  e.preventDefault();
-
-  const nameOk  = validateField('input-name',  'error-name',  'Please enter your full name.');
-  const dobOk   = validateField('input-dob',   'error-dob',   'Please enter your date of birth.');
-  const placeOk = validateField('input-place', 'error-place', 'Please enter your place of birth.');
-
-  if (!nameOk || !dobOk || !placeOk) return;
-
-  const name   = document.getElementById('input-name').value.trim();
-  const dob    = document.getElementById('input-dob').value;
-  const tob    = document.getElementById('tob-unknown-check').checked
-                   ? null
-                   : document.getElementById('input-tob').value || null;
-  const place  = document.getElementById('input-place').value.trim();
-  const gender = document.querySelector('input[name="gender"]:checked')?.value || null;
-
-  // Compute Sun Sign
-  const [year, month, day] = dob.split('-').map(Number);
-  const sign = getSunSign(month, day);
-
-  // Simulate brief loading
-  const btn = document.getElementById('btn-generate');
-  btn.classList.add('loading');
-  btn.disabled = true;
-
-  setTimeout(() => {
-    btn.classList.remove('loading');
-    btn.disabled = false;
-
-    // Populate result screen
-    populateResult({ name, dob, tob, place, gender, sign });
-    showScreen('result');
-
-    // Illuminate their constellation in the cosmos!
-    if (typeof triggerConstellationHighlight === 'function') {
-      triggerConstellationHighlight(sign.name, 6.0);
-    }
-  }, 800);
-});
-
-
 /* ================================================
    POPULATE RESULT SCREEN
    ================================================ */
-function populateResult({ name, dob, tob, place, gender, sign }) {
+function populateResult({ name, dob, tob, place, gender, sign, aspects, txnId, amountPaid, paymentMethod }) {
   // User summary
-  document.getElementById('user-name-display').textContent = name;
-  document.getElementById('user-avatar').textContent = sign.symbol;
+  const nameDisplay = document.getElementById('user-name-display');
+  if (nameDisplay) nameDisplay.textContent = name;
+
+  const avatar = document.getElementById('user-avatar');
+  if (avatar) avatar.textContent = sign.symbol;
 
   const badgeSign = document.getElementById('badge-sign');
-  badgeSign.textContent = `${sign.symbol} ${sign.name}`;
+  if (badgeSign) badgeSign.textContent = `${sign.symbol} ${sign.name}`;
 
   const badgeElement = document.getElementById('badge-element');
-  badgeElement.textContent = `${ELEMENT_EMOJI[sign.element]} ${sign.element}`;
-  badgeElement.style.color = ELEMENT_COLOR[sign.element];
-  badgeElement.style.borderColor = ELEMENT_COLOR[sign.element] + '55';
-  badgeElement.style.background = ELEMENT_COLOR[sign.element] + '15';
+  if (badgeElement) {
+    badgeElement.textContent = `${ELEMENT_EMOJI[sign.element]} ${sign.element}`;
+    badgeElement.style.color = ELEMENT_COLOR[sign.element];
+    badgeElement.style.borderColor = ELEMENT_COLOR[sign.element] + '55';
+    badgeElement.style.background = ELEMENT_COLOR[sign.element] + '15';
+  }
 
-  document.getElementById('badge-dob').textContent = `📅 ${formatDate(dob)}`;
+  const badgeDob = document.getElementById('badge-dob');
+  if (badgeDob) badgeDob.textContent = `📅 ${formatDate(dob)}`;
+
+  // Update Transaction Receipt Badge
+  const txnIdDisplay = document.getElementById('txn-id-display');
+  if (txnIdDisplay) txnIdDisplay.textContent = txnId || 'TXN-ASTRO-8942';
+
+  const txnSummaryText = document.getElementById('txn-summary-text');
+  if (txnSummaryText) {
+    const aspectCount = aspects?.size || 2;
+    const aspectNames = Array.from(aspects || ['love', 'finance'])
+      .map(id => ASPECT_CATALOG[id]?.name || id)
+      .join(', ');
+    txnSummaryText.textContent = `Paid: ₹${amountPaid || 34} via ${paymentMethod || 'PhonePe UPI'} · ${aspectCount} Cosmic Aspect${aspectCount > 1 ? 's' : ''} Unlocked (${aspectNames})`;
+  }
 
   // Generate prompt
-  const prompt = generateAstrologyPrompt({ name, dob, tob, place, gender, sign });
-  document.getElementById('prompt-text').textContent = prompt;
+  const prompt = generateAstrologyPrompt({ name, dob, tob, place, gender, sign, aspects, txnId, amountPaid, paymentMethod });
+  const promptEl = document.getElementById('prompt-text');
+  if (promptEl) promptEl.textContent = prompt;
 }
+
+// Initialize checkout logic
+initAspectsAndCheckout();
+updatePricing();
 
 
 /* ================================================

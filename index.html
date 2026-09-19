@@ -507,15 +507,348 @@
             </div>
           </div>
 
-          <!-- Submit -->
-          <button type="submit" id="btn-generate" class="btn-primary btn-full" aria-label="Generate your astrology reading">
+          <!-- Submit: Continue to Cosmic Aspects -->
+          <button type="submit" id="btn-continue-aspects" class="btn-primary btn-full" aria-label="Continue to astrology aspects selection">
             <span class="btn-glow"></span>
-            <span class="btn-text">✦ Generate My Reading</span>
+            <span class="btn-text">✦ Continue to Cosmic Aspects (₹10–₹20) →</span>
           </button>
         </form>
       </div>
     </div>
   </section>
+
+  <!-- ===================== SCREEN 2B: COSMIC ASPECTS & PAYMENT CHECKOUT ===================== -->
+  <section id="screen-aspects" class="screen" aria-label="Cosmic aspects and payment checkout" hidden>
+    <div class="aspects-container">
+      <div class="form-header">
+        <button id="btn-back-to-form" class="btn-back" aria-label="Back to birth details">
+          <span>←</span> Birth Details
+        </button>
+        <div class="step-indicator" aria-label="Step 2 of 3">
+          <span class="step done">✓</span>
+          <span class="step-line active"></span>
+          <span class="step active">2</span>
+          <span class="step-line"></span>
+          <span class="step">3</span>
+        </div>
+      </div>
+
+      <!-- Aspects Card -->
+      <div class="aspects-card glass-card">
+        <div class="aspects-card-header">
+          <div class="aspects-badge-pill">✦ STEP 2 OF 3 · CHOOSE ASPECTS</div>
+          <h2 class="form-title">Select Your Cosmic Aspects</h2>
+          <p class="form-subtitle">Choose the specific dimensions of your destiny. Each domain is charged at ₹10 to ₹20.</p>
+        </div>
+
+        <!-- Bundle Quick Select Banner -->
+        <div class="bundle-banner" id="bundle-banner">
+          <div class="bundle-glow" aria-hidden="true"></div>
+          <div class="bundle-info">
+            <div class="bundle-badge">⚡ BEST VALUE · SAVE 39%</div>
+            <h3 class="bundle-title">All-in-One Complete Cosmic Blueprint</h3>
+            <p class="bundle-desc">Decode all 6 life aspects with our full predictive astrology analysis.</p>
+          </div>
+          <div class="bundle-action">
+            <div class="bundle-price">
+              <span class="bundle-old-price">₹97</span>
+              <span class="bundle-new-price">₹59</span>
+            </div>
+            <button type="button" class="btn-bundle-toggle" id="btn-bundle-toggle" aria-label="Select all aspects bundle">
+              Select All (₹59)
+            </button>
+          </div>
+        </div>
+
+        <!-- Aspects Selection Grid (6 Domains) -->
+        <div class="aspects-grid" id="aspects-grid" role="group" aria-label="Astrology aspect selection">
+          
+          <!-- 1. Love & Relationships -->
+          <div class="aspect-tile selected" data-aspect="love" data-price="15" tabindex="0" role="checkbox" aria-checked="true">
+            <div class="aspect-tile-check" aria-hidden="true">✓</div>
+            <div class="aspect-tile-icon">❤️</div>
+            <div class="aspect-tile-content">
+              <div class="aspect-tile-title-row">
+                <h4 class="aspect-tile-title">Love & Soulmate Life</h4>
+                <span class="aspect-tile-price">₹15</span>
+              </div>
+              <p class="aspect-tile-desc">Venus alignment, soulmate timing, romantic chemistry, emotional harmony & attraction aura.</p>
+              <span class="aspect-tile-tag">Venus · 5th & 7th House</span>
+            </div>
+          </div>
+
+          <!-- 2. Wealth & Finance -->
+          <div class="aspect-tile selected" data-aspect="finance" data-price="19" tabindex="0" role="checkbox" aria-checked="true">
+            <div class="aspect-tile-check" aria-hidden="true">✓</div>
+            <div class="aspect-tile-icon">💰</div>
+            <div class="aspect-tile-content">
+              <div class="aspect-tile-title-row">
+                <h4 class="aspect-tile-title">Wealth & Financial Fortune</h4>
+                <span class="aspect-tile-price">₹19</span>
+              </div>
+              <p class="aspect-tile-desc">Dhana Yogas, money house activations, investment cycles, abundance blockers & high-gain windows.</p>
+              <span class="aspect-tile-tag">Jupiter · 2nd & 11th House</span>
+            </div>
+          </div>
+
+          <!-- 3. Career & Ambition -->
+          <div class="aspect-tile" data-aspect="career" data-price="18" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="aspect-tile-check" aria-hidden="true">✓</div>
+            <div class="aspect-tile-icon">💼</div>
+            <div class="aspect-tile-content">
+              <div class="aspect-tile-title-row">
+                <h4 class="aspect-tile-title">Career, Job & Business</h4>
+                <span class="aspect-tile-price">₹18</span>
+              </div>
+              <p class="aspect-tile-desc">10th house karmic profession, promotions, corporate authority, entrepreneurship & job transitions.</p>
+              <span class="aspect-tile-tag">Sun & Saturn · 10th House</span>
+            </div>
+          </div>
+
+          <!-- 4. Marriage & Compatibility -->
+          <div class="aspect-tile" data-aspect="marriage" data-price="19" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="aspect-tile-check" aria-hidden="true">✓</div>
+            <div class="aspect-tile-icon">💍</div>
+            <div class="aspect-tile-content">
+              <div class="aspect-tile-title-row">
+                <h4 class="aspect-tile-title">Marriage & Compatibility</h4>
+                <span class="aspect-tile-price">₹19</span>
+              </div>
+              <p class="aspect-tile-desc">Kundali Milan, Mangal Dosha review, spouse characteristics, marital harmony & marriage timing.</p>
+              <span class="aspect-tile-tag">Navamsha (D9) & 7th Lord</span>
+            </div>
+          </div>
+
+          <!-- 5. Health & Vitality -->
+          <div class="aspect-tile" data-aspect="health" data-price="12" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="aspect-tile-check" aria-hidden="true">✓</div>
+            <div class="aspect-tile-icon">🌿</div>
+            <div class="aspect-tile-content">
+              <div class="aspect-tile-title-row">
+                <h4 class="aspect-tile-title">Health & Cosmic Vitality</h4>
+                <span class="aspect-tile-price">₹12</span>
+              </div>
+              <p class="aspect-tile-desc">Ayurvedic planetary doshas, vitality reserves, mental wellness, energy peaks & restorative cycles.</p>
+              <span class="aspect-tile-tag">Mars & Moon · 6th House</span>
+            </div>
+          </div>
+
+          <!-- 6. Karma & Spiritual Destiny -->
+          <div class="aspect-tile" data-aspect="spirituality" data-price="14" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="aspect-tile-check" aria-hidden="true">✓</div>
+            <div class="aspect-tile-icon">🔮</div>
+            <div class="aspect-tile-content">
+              <div class="aspect-tile-title-row">
+                <h4 class="aspect-tile-title">Karma & Spiritual Destiny</h4>
+                <span class="aspect-tile-price">₹14</span>
+              </div>
+              <p class="aspect-tile-desc">Rahu-Ketu nodal axis, past life karmic debts, spiritual awakening, inner peace & life purpose.</p>
+              <span class="aspect-tile-tag">Rahu-Ketu · 9th & 12th House</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Live Price Summary Glass Box -->
+        <div class="checkout-summary-box glass-card">
+          <div class="summary-line">
+            <span class="summary-label">Selected Life Aspects (<span id="selected-count">2</span>)</span>
+            <span class="summary-val" id="summary-subtotal">₹34</span>
+          </div>
+          <div class="summary-line discount-line" id="discount-row" style="display: none;">
+            <span class="summary-label">⚡ Cosmic Bundle Savings</span>
+            <span class="summary-val discount-val" id="summary-discount">-₹38</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-line total-line">
+            <div>
+              <span class="total-label">Total Payable</span>
+              <span class="total-sub">Includes all custom predictions</span>
+            </div>
+            <span class="total-amount" id="summary-total">₹34</span>
+          </div>
+        </div>
+
+        <!-- Payment Method Section -->
+        <div class="payment-section">
+          <div class="payment-section-header">
+            <h3 class="payment-title">Choose Payment Method</h3>
+            <span class="payment-secure-tag">🔒 256-Bit Encrypted</span>
+          </div>
+          
+          <!-- Payment Tabs -->
+          <div class="payment-tabs" role="tablist">
+            <button type="button" class="pay-tab active" data-tab="upi" role="tab" aria-selected="true">
+              <span class="tab-icon">📱</span> UPI (Apps / QR)
+            </button>
+            <button type="button" class="pay-tab" data-tab="card" role="tab" aria-selected="false">
+              <span class="tab-icon">💳</span> Debit / Credit Card
+            </button>
+            <button type="button" class="pay-tab" data-tab="netbanking" role="tab" aria-selected="false">
+              <span class="tab-icon">🏛️</span> Net Banking
+            </button>
+          </div>
+
+          <!-- Tab 1: UPI Panel -->
+          <div class="pay-tab-panel active" id="panel-upi">
+            <p class="pay-instruction">Tap your preferred UPI app for instant zero-fee cosmic checkout:</p>
+            <div class="upi-apps-row">
+              <button type="button" class="upi-app-btn active" data-app="PhonePe">
+                <span class="upi-badge-dot"></span>
+                <span class="upi-app-name">PhonePe</span>
+              </button>
+              <button type="button" class="upi-app-btn" data-app="Google Pay">
+                <span class="upi-badge-dot"></span>
+                <span class="upi-app-name">Google Pay</span>
+              </button>
+              <button type="button" class="upi-app-btn" data-app="Paytm">
+                <span class="upi-badge-dot"></span>
+                <span class="upi-app-name">Paytm</span>
+              </button>
+              <button type="button" class="upi-app-btn" data-app="BHIM / Any UPI">
+                <span class="upi-badge-dot"></span>
+                <span class="upi-app-name">BHIM UPI</span>
+              </button>
+            </div>
+
+            <!-- UPI ID Input Field -->
+            <div class="form-group" style="margin-top: 14px; margin-bottom: 12px;">
+              <label for="input-upi-id" class="form-label" style="font-size: 0.8rem;">
+                <span>Or Enter Virtual Payment Address (VPA / UPI ID)</span>
+              </label>
+              <div class="upi-input-wrap">
+                <input type="text" id="input-upi-id" class="form-input" placeholder="e.g. yourname@okaxis or mobile@paytm" value="astro.seeker@upi" />
+                <button type="button" class="btn-verify-upi" id="btn-verify-upi">Verified ✓</button>
+              </div>
+            </div>
+
+            <!-- Expandable Dynamic QR Code -->
+            <button type="button" class="btn-qr-toggle" id="btn-qr-toggle">
+              <span>📷 Or Scan Dynamic UPI QR Code</span>
+              <span class="qr-arrow-indicator">▼</span>
+            </button>
+            <div class="qr-box-container" id="qr-box-container" style="display: none;">
+              <div class="simulated-qr">
+                <svg viewBox="0 0 120 120" class="qr-svg" aria-label="UPI QR Code">
+                  <rect width="120" height="120" fill="#ffffff" rx="8" />
+                  <!-- Authentic QR Finder Patterns -->
+                  <rect x="10" y="10" width="30" height="30" fill="#120028" />
+                  <rect x="14" y="14" width="22" height="22" fill="#ffffff" />
+                  <rect x="18" y="18" width="14" height="14" fill="#7c3aed" />
+                  <rect x="80" y="10" width="30" height="30" fill="#120028" />
+                  <rect x="84" y="14" width="22" height="22" fill="#ffffff" />
+                  <rect x="88" y="18" width="14" height="14" fill="#7c3aed" />
+                  <rect x="10" y="80" width="30" height="30" fill="#120028" />
+                  <rect x="14" y="84" width="22" height="22" fill="#ffffff" />
+                  <rect x="18" y="88" width="14" height="14" fill="#7c3aed" />
+                  <!-- QR Data Bits Matrix -->
+                  <circle cx="60" cy="20" r="3" fill="#120028" />
+                  <circle cx="68" cy="28" r="3" fill="#120028" />
+                  <circle cx="52" cy="36" r="3" fill="#7c3aed" />
+                  <circle cx="60" cy="60" r="5" fill="#f59e0b" />
+                  <circle cx="48" cy="68" r="3" fill="#120028" />
+                  <circle cx="72" cy="68" r="3" fill="#120028" />
+                  <circle cx="88" cy="60" r="3" fill="#7c3aed" />
+                  <circle cx="80" cy="80" r="4" fill="#120028" />
+                  <circle cx="96" cy="92" r="3" fill="#120028" />
+                  <circle cx="60" cy="96" r="3" fill="#7c3aed" />
+                </svg>
+                <div class="qr-badge">SCAN TO PAY WITH ANY UPI APP</div>
+                <div class="qr-upi-id-copy">UPI ID: <strong>astrotalk.cosmic@icici</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Card Panel -->
+          <div class="pay-tab-panel" id="panel-card" style="display: none;">
+            <!-- Live Glass Card Preview -->
+            <div class="glass-card-preview" id="card-preview">
+              <div class="card-preview-chip" aria-hidden="true"></div>
+              <div class="card-preview-logo">ASTROPAY · RUPAY / VISA</div>
+              <div class="card-preview-num" id="card-preview-num">4532 •••• •••• 4242</div>
+              <div class="card-preview-row">
+                <div>
+                  <div class="card-preview-lbl">CARD HOLDER</div>
+                  <div class="card-preview-val" id="card-preview-name">ARJUN SHARMA</div>
+                </div>
+                <div>
+                  <div class="card-preview-lbl">EXPIRES</div>
+                  <div class="card-preview-val" id="card-preview-exp">08/29</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="input-card-name" class="form-label" style="font-size: 0.8rem;">Name on Card</label>
+              <input type="text" id="input-card-name" class="form-input" placeholder="e.g. Arjun Sharma" value="Arjun Sharma" />
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="input-card-num" class="form-label" style="font-size: 0.8rem;">Card Number (Credit or Debit)</label>
+              <input type="text" id="input-card-num" class="form-input" placeholder="4111 2222 3333 4242" maxlength="19" value="4532 8921 4410 4242" />
+            </div>
+            <div class="form-row-2">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="input-card-exp" class="form-label" style="font-size: 0.8rem;">Expiry (MM/YY)</label>
+                <input type="text" id="input-card-exp" class="form-input" placeholder="MM/YY" maxlength="5" value="08/29" />
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="input-card-cvv" class="form-label" style="font-size: 0.8rem;">CVV</label>
+                <input type="password" id="input-card-cvv" class="form-input" placeholder="123" maxlength="4" value="888" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Net Banking Panel -->
+          <div class="pay-tab-panel" id="panel-netbanking" style="display: none;">
+            <p class="pay-instruction">Choose your bank for secure net banking gateway:</p>
+            <div class="bank-grid">
+              <button type="button" class="bank-btn active" data-bank="HDFC Bank">HDFC Bank</button>
+              <button type="button" class="bank-btn" data-bank="State Bank of India">State Bank of India (SBI)</button>
+              <button type="button" class="bank-btn" data-bank="ICICI Bank">ICICI Bank</button>
+              <button type="button" class="bank-btn" data-bank="Axis Bank">Axis Bank</button>
+              <button type="button" class="bank-btn" data-bank="Kotak Mahindra">Kotak Mahindra</button>
+              <button type="button" class="bank-btn" data-bank="Punjab National Bank">Punjab National Bank</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Big Pay & Unlock Button -->
+        <button type="button" id="btn-pay-unlock" class="btn-pay-cosmic" aria-label="Pay and unlock astrology reading">
+          <span class="pay-btn-glow" aria-hidden="true"></span>
+          <span class="pay-btn-lock">🔒</span>
+          <span class="pay-btn-text">Pay <span id="btn-pay-amount">₹34</span> & Reveal Cosmic Blueprint</span>
+          <span class="pay-btn-arrow">→</span>
+        </button>
+
+        <!-- Security Trust Strip -->
+        <div class="payment-trust-strip">
+          <span>🛡️ 256-Bit Bank-Grade SSL</span>
+          <span>•</span>
+          <span>⚡ Instant Cosmic Delivery</span>
+          <span>•</span>
+          <span>💳 Zero Hidden Charges</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CELESTIAL PAYMENT PROCESSING OVERLAY ===================== -->
+  <div class="payment-modal-overlay" id="payment-processing-modal" hidden>
+    <div class="payment-processing-card glass-card">
+      <div class="celestial-spinner-wrap">
+        <div class="celestial-spinner-ring"></div>
+        <div class="celestial-spinner-star">✦</div>
+      </div>
+      <h3 class="processing-title" id="processing-title">Connecting to Cosmic Gateway...</h3>
+      <p class="processing-subtitle" id="processing-subtitle">Verifying transaction of <strong id="processing-amount">₹34</strong> via PhonePe UPI</p>
+      
+      <!-- Live Progress Bar -->
+      <div class="processing-bar-wrap">
+        <div class="processing-bar-fill" id="processing-bar-fill"></div>
+      </div>
+      <p class="processing-note">Do not close or refresh this tab</p>
+    </div>
+  </div>
 
   <!-- ===================== SCREEN 3: RESULT ===================== -->
   <section id="screen-result" class="screen" aria-label="Astrology reading result" hidden>
@@ -524,10 +857,24 @@
         <button id="btn-restart" class="btn-back" aria-label="Start over">
           ← Start Over
         </button>
-        <div class="step-indicator" aria-label="Step 2 of 2">
+        <div class="step-indicator" aria-label="Step 3 of 3">
           <span class="step done">✓</span>
           <span class="step-line active"></span>
-          <span class="step active">2</span>
+          <span class="step done">✓</span>
+          <span class="step-line active"></span>
+          <span class="step active">3</span>
+        </div>
+      </div>
+
+      <!-- Verified Transaction Payment Receipt Badge -->
+      <div class="transaction-receipt-badge glass-card" id="txn-receipt-badge">
+        <div class="txn-status-icon">✓</div>
+        <div class="txn-info-wrap">
+          <div class="txn-title-row">
+            <span class="txn-status-text">PAYMENT VERIFIED & UNLOCKED</span>
+            <span class="txn-id" id="txn-id-display">TXN-ASTRO-8942</span>
+          </div>
+          <p class="txn-summary-text" id="txn-summary-text">Paid: ₹34 via PhonePe UPI · 2 Cosmic Aspects Unlocked (Love Life, Wealth & Finance)</p>
         </div>
       </div>
 
